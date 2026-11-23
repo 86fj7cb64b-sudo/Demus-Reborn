@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111113">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Demus Reborn">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <title>Demus Reborn</title>
+  <style>
+    :root{color-scheme:dark;--bg:#111113;--panel:#252528;--panel2:#303034;--muted:#99999f;--accent:#ffa500}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:#f7f7f8;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+    button,input{font:inherit} button{color:inherit;border:0;cursor:pointer}
+    .app{max-width:900px;margin:auto;min-height:100vh;padding:18px 18px 120px}
+    header{display:flex;align-items:center;justify-content:space-between;margin:6px 0 25px}
+    .brand{font-size:19px;font-weight:750;letter-spacing:-.4px}.brand span{color:var(--accent)}
+    .profile{background:var(--panel);border:1px solid #39393e;border-radius:22px;padding:10px 14px;color:var(--accent)}
+    h1{font-size:38px;margin:8px 0 18px;letter-spacing:-1.3px}
+    .search{display:flex;align-items:center;gap:10px;background:var(--panel2);border-radius:28px;padding:14px 17px;margin-bottom:18px}
+    .search input{background:transparent;border:0;outline:0;color:white;width:100%;font-size:17px}
+    .tabs{display:flex;background:var(--panel);border-radius:30px;padding:4px;gap:3px;margin-bottom:24px}
+    .tabs button{flex:1;padding:11px 5px;border-radius:25px;background:transparent;color:#ddd;font-size:14px}
+    .tabs button.active{background:#69696f;color:white;font-weight:650}
+    .section{margin:24px 0 30px}.section h2{font-size:23px;margin:0 0 14px}
+    .cards{display:flex;gap:13px;overflow:auto;padding-bottom:5px}
+    .card{min-width:145px;width:43%;max-width:190px}
+    .cover{width:100%;aspect-ratio:1;border-radius:17px;background:linear-gradient(135deg,#37373d,#17171a);display:grid;place-items:center;font-size:38px;color:#aaa;border:1px solid #39393e}
+    .card strong{display:block;margin-top:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:15px}
+    .sub{color:var(--muted);font-size:13px;margin-top:3px}
+    .row{display:flex;align-items:center;gap:12px;padding:10px 2px;border-bottom:1px solid #29292d}
+    .thumb{width:48px;height:48px;border-radius:9px;background:#333;display:grid;place-items:center;flex:none}
+    .trackinfo{min-width:0;flex:1}.trackinfo strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .trackinfo small{display:block;color:var(--muted);margin-top:4px}
+    .plain{background:transparent;color:var(--accent);font-size:21px;padding:8px}
+    .primary{background:var(--panel2);color:var(--accent);border-radius:25px;padding:13px 18px;font-weight:650}
+    .player{position:fixed;z-index:5;left:12px;right:12px;bottom:calc(82px + env(safe-area-inset-bottom));max-width:876px;margin:auto;background:rgba(39,39,43,.96);border:1px solid #4a4a50;border-radius:25px;padding:9px 12px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 30px #0008;backdrop-filter:blur(18px)}
+    .player .thumb{width:43px;height:43px}.player .trackinfo strong{font-size:14px}
+    nav{position:fixed;z-index:6;bottom:calc(10px + env(safe-area-inset-bottom));left:12px;right:12px;max-width:876px;margin:auto;background:rgba(39,39,43,.97);border:1px solid #4a4a50;border-radius:32px;padding:7px;display:flex;justify-content:space-around;backdrop-filter:blur(18px)}
+    nav button{background:transparent;color:#eee;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;padding:7px 10px;border-radius:25px;min-width:54px}
+    nav button .ico{font-size:22px} nav button.active{background:#55555b;color:var(--accent)}
+    .empty{color:var(--muted);text-align:center;padding:35px 12px}
+    .page{display:none}.page.active{display:block}
+    .listhead{display:flex;align-items:center;justify-content:space-between}
+    .notice{color:var(--muted);font-size:12px;line-height:1.5;margin-top:20px}
+    @media(min-width:700px){.app{padding:25px 30px 130px}h1{font-size:44px}.card{width:170px}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <header><div class="brand">♫ <span>DEMUS</span> REBORN</div><button class="profile" id="profile">Libreria locale</button></header>
+
+  <section id="add" class="page active">
+    <h1>Aggiungi</h1>
+    <div class="search"><span>⌕</span><input id="search" placeholder="Cerca brani nella demo..." autocomplete="off"></div>
+    <div class="tabs"><button class="active" data-filter="popular">Popolari</button><button data-filter="charts">Classifiche</button></div>
+    <div class="section"><h2>Novità</h2><div class="cards" id="newCards"></div></div>
+    <div class="section"><h2 id="resultsTitle">Brani suggeriti</h2><div id="results"></div></div>
+    <p class="notice">Questa è una prima demo dell'interfaccia. Il catalogo mostrato è dimostrativo: non è collegato a Spotify, YouTube o a un servizio di streaming.</p>
+  </section>
+
+  <section id="songs" class="page"><h1>Brani</h1><div id="songList"></div></section>
+  <section id="albums" class="page"><h1>Album</h1><div class="empty">Gli album aggiunti appariranno qui.</div></section>
+  <section id="artists" class="page"><h1>Artisti</h1><div class="empty">Gli artisti della tua libreria appariranno qui.</div></section>
+  <section id="playlists" class="page"><div class="listhead"><h1>Playlist</h1><button class="primary" id="newPlaylist">＋ Crea</button></div><div id="playlistList"></div></section>
+</div>
+
+<div class="player">
+  <div class="thumb" id="miniArt">♫</div>
+  <div class="trackinfo"><strong id="miniTitle">Nessuna riproduzione</strong><small id="miniArtist">Scegli un brano della demo</small></div>
+  <button class="plain" id="miniPlay" aria-label="Riproduci">▶</button>
+  <button class="plain" id="next" aria-label="Brano successivo">⏭</button>
+</div>
+<nav>
+  <button class="active" data-page="add"><span class="ico">⌕</span>Aggiungi</button>
+  <button data-page="songs"><span class="ico">♫</span>Brani</button>
+  <button data-page="albums"><span class="ico">▣</span>Album</button>
+  <button data-page="artists"><span class="ico">♟</span>Artisti</button>
+  <button data-page="playlists"><span class="ico">☷</span>Playlist</button>
+</nav>
+
+<script>
+const tracks = [
+ {id:1,title:"Maradona",artist:"Mannarino",album:"Demo italiana",art:"🎨"},
+ {id:2,title:"FIDDLE DISCO!",artist:"Elias Alexander",album:"Singolo",art:"🪩"},
+ {id:3,title:"WHERE IS MY HUSBAND!",artist:"RAYE",album:"Singolo",art:"🌙"},
+ {id:4,title:"Le_Alì (Acoustic Version)",artist:"Max Pezzali",album:"Acoustic",art:"🎸"},
+ {id:5,title:"CALABRIA TERRA",artist:"djNoel",album:"Singolo",art:"🌄"},
+ {id:6,title:"Per un po' d'amore",artist:"Artista demo",album:"Album demo",art:"💿"}
+];
+let library = JSON.parse(localStorage.getItem("dr-library")||"[]");
+let playlists = JSON.parse(localStorage.getItem("dr-playlists")||"[]");
+let current = null, playing = false, queue = [];
+const $ = id => document.getElementById(id);
+function save(){localStorage.setItem("dr-library",JSON.stringify(library));localStorage.setItem("dr-playlists",JSON.stringify(playlists))}
+function trackRow(t,showAdd=true){return `<div class="row"><div class="thumb">${t.art}</div><div class="trackinfo"><strong>${t.title}</strong><small>${t.artist}</small></div><button class="plain playTrack" data-id="${t.id}">▶</button>${showAdd?`<button class="plain addTrack" data-id="${t.id}">＋</button>`:""}</div>`}
+function renderCards(){$("newCards").innerHTML=tracks.slice(0,5).map(t=>`<div class="card"><div class="cover">${t.art}</div><strong>${t.title}</strong><div class="sub">${t.artist}</div></div>`).join("")}
+function renderResults(list=tracks){$("results").innerHTML=list.length?list.map(t=>trackRow(t)).join(""):'<div class="empty">Nessun risultato.</div>';bindRows()}
+function renderLibrary(){$("songList").innerHTML=library.length?library.map(id=>tracks.find(t=>t.id===id)).filter(Boolean).map(t=>trackRow(t,false)).join(""):'<div class="empty">La tua libreria è vuota. Premi ＋ accanto a un brano per salvarlo.</div>';bindRows()}
+function renderPlaylists(){$("playlistList").innerHTML=playlists.length?playlists.map((p,i)=>`<div class="row"><div class="thumb">♫</div><div class="trackinfo"><strong>${p.name}</strong><small>${p.ids.length} brani</small></div><button class="plain openPlaylist" data-index="${i}">›</button></div>`).join(""):'<div class="empty">Non hai ancora creato playlist.</div>';document.querySelectorAll(".openPlaylist").forEach(b=>b.onclick=()=>{let p=playlists[+b.dataset.index];$("playlistList").innerHTML=`<button class="plain" id="backLists">← Playlist</button><h2>${p.name}</h2>`+p.ids.map(id=>tracks.find(t=>t.id===id)).filter(Boolean).map(t=>trackRow(t,false)).join("");$("backLists").onclick=renderPlaylists;bindRows()})}
+function bindRows(){document.querySelectorAll(".playTrack").forEach(b=>b.onclick=()=>play(+b.dataset.id));document.querySelectorAll(".addTrack").forEach(b=>b.onclick=()=>{let id=+b.dataset.id;if(!library.includes(id))library.push(id);save();renderLibrary();b.textContent="✓"})}
+function play(id){current=tracks.find(t=>t.id===id);if(!current)return;playing=true;queue=tracks.filter(t=>t.id!==id);$("miniTitle").textContent=current.title;$("miniArtist").textContent=current.artist;$("miniArt").textContent=current.art;$("miniPlay").textContent="Ⅱ"}
+function toggle(){if(!current){play(tracks[0].id);return}playing=!playing;$("miniPlay").textContent=playing?"Ⅱ":"▶"}
+function go(page){document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===page));document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===page));if(page==="songs")renderLibrary();if(page==="playlists")renderPlaylists()}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>go(b.dataset.page));
+$("miniPlay").onclick=toggle;$("next").onclick=()=>{if(queue.length)play(queue.shift().id);else if(current){let i=tracks.findIndex(t=>t.id===current.id);play(tracks[(i+1)%tracks.length].id)}};
+$("search").addEventListener("input",e=>{let q=e.target.value.toLowerCase();$("resultsTitle").textContent=q?"Risultati":"Brani suggeriti";renderResults(tracks.filter(t=>(t.title+" "+t.artist).toLowerCase().includes(q)))});
+$("newPlaylist").onclick=()=>{let name=prompt("Nome della playlist");if(!name)return;playlists.push({name,ids:[]});save();renderPlaylists()};
+document.querySelectorAll("[data-filter]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-filter]").forEach(x=>x.classList.toggle("active",x===b));renderResults(b.dataset.filter==="charts"?[...tracks].reverse():tracks)});
+$("profile").onclick=()=>alert("Demo locale: preferiti e playlist sono salvati su questo dispositivo.");
+renderCards();renderResults();
+if("serviceWorker" in navigator && location.protocol.startsWith("http"))navigator.serviceWorker.register("./sw.js").catch(()=>{});
+</script>
+</body>
+</html>

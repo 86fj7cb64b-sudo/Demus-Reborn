@@ -1,0 +1,9 @@
+{
+  "name": "Demus Reborn",
+  "short_name": "Demus",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#111113",
+  "theme_color": "#111113",
+  "lang": "it"
+}
